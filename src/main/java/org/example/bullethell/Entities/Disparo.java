@@ -2,7 +2,7 @@ package org.example.bullethell.Entities;
 
 import javafx.scene.image.ImageView;
 
-public class Disparo {
+public abstract class Disparo {
     private double coordenadasX;
     private double coordenadasY;
     private ImageView sprite;
