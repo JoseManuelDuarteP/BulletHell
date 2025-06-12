@@ -6,11 +6,13 @@ public class NaveEnemiga {
     private double coordenadaX;
     private double coordenadaY;
     private ImageView sprite;
+    private int hp;
 
-    public NaveEnemiga(double coordenadaX, double coordenadaY, ImageView sprite) {
+    public NaveEnemiga(double coordenadaX, double coordenadaY, ImageView sprite, int hp) {
         this.coordenadaX = coordenadaX;
         this.coordenadaY = coordenadaY;
         this.sprite = sprite;
+        this.hp = hp;
     }
 
     public double getCoordenadaX() {
@@ -35,5 +37,13 @@ public class NaveEnemiga {
 
     public void setSprite(ImageView sprite) {
         this.sprite = sprite;
+    }
+
+    public int getHp() {
+        return hp;
+    }
+
+    public void setHp(int hp) {
+        this.hp = hp;
     }
 }

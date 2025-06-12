@@ -6,11 +6,13 @@ public class Disparo {
     private double coordenadasX;
     private double coordenadasY;
     private ImageView sprite;
+    private int danyo;
 
-    public Disparo(double coordenadasX, double coordenadasY, ImageView sprite) {
+    public Disparo(double coordenadasX, double coordenadasY, ImageView sprite, int danyo) {
         this.coordenadasX = coordenadasX;
         this.coordenadasY = coordenadasY;
         this.sprite = sprite;
+        this.danyo = danyo;
     }
 
     public double getCoordenadasX() {
@@ -35,5 +37,13 @@ public class Disparo {
 
     public void setSprite(ImageView sprite) {
         this.sprite = sprite;
+    }
+
+    public int getDanyo() {
+        return danyo;
+    }
+
+    public void setDanyo(int danyo) {
+        this.danyo = danyo;
     }
 }
