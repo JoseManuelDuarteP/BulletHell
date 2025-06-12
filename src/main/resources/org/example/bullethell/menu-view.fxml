@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+
+<VBox alignment="TOP_CENTER" prefHeight="187.0" prefWidth="243.0" spacing="10" xmlns:fx="http://javafx.com/fxml/1" xmlns="http://javafx.com/javafx/17.0.12" fx:controller="org.example.bullethell.Controllers.MenuController">
+
+    <Label style="-fx-font-size: 20" text="Bullet Hell" />
+
+    <Button onAction="#iniciar" text="Iniciar Partida" />
+    <Button onAction="#salir" text="Salir" />
+
+</VBox>
