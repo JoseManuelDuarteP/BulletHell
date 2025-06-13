@@ -6,6 +6,13 @@ import javafx.animation.PauseTransition;
 import javafx.animation.Timeline;
 import javafx.application.Platform;
 import javafx.fxml.FXML;
+import javafx.fxml.FXMLLoader;
+import javafx.geometry.Insets;
+import javafx.geometry.Pos;
+import javafx.scene.Parent;
+import javafx.scene.Scene;
+import javafx.scene.control.Alert;
+import javafx.scene.control.Button;
 import javafx.scene.control.Label;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
@@ -13,10 +20,12 @@ import javafx.scene.input.KeyCode;
 import javafx.scene.layout.*;
 import javafx.scene.paint.Color;
 import javafx.scene.text.Font;
+import javafx.stage.Stage;
 import javafx.util.Duration;
 import org.example.bullethell.Entities.*;
 
 
+import java.io.IOException;
 import java.util.*;
 
 public class JuegoController {
@@ -25,6 +34,8 @@ public class JuegoController {
 
     @FXML
     private Pane fondoDelJuego;
+
+    private Stage stage;
 
     private Label labelVida;
     private Label labelPuntuacion;
@@ -36,9 +47,15 @@ public class JuegoController {
 
     private List<NaveEnemiga> enemigos = new ArrayList<>();
     private Timeline generarEnemigo;
+    private AnimationTimer animacionPrincipal;
+    private Timeline disparoEnemigos;
 
     private List<Disparo> disparosJugador = new ArrayList<>();
     private List<Disparo> disparosEnemigos = new ArrayList<>();
+
+    protected void setStage(Stage stage) {
+        this.stage = stage;
+    }
 
     @FXML
     public void iniciarJuego() {
@@ -77,7 +94,7 @@ public class JuegoController {
             teclasPresionadas.remove(e.getCode());
         });
 
-        AnimationTimer timer = new AnimationTimer() {
+        animacionPrincipal = new AnimationTimer() {
             @Override
             public void handle(long now) {
                 moverDisparos();
@@ -86,14 +103,14 @@ public class JuegoController {
                 detectarColisiones();
             }
         };
-        timer.start();
+        animacionPrincipal.start();
 
         generarEnemigo = new Timeline(new KeyFrame(Duration.seconds(3),
                 e -> generarEnemigo()));
         generarEnemigo.setCycleCount(Timeline.INDEFINITE);
         generarEnemigo.play();
 
-        Timeline disparoEnemigos = new Timeline(new KeyFrame(Duration.seconds(2.5), e -> {
+        disparoEnemigos = new Timeline(new KeyFrame(Duration.seconds(2.5), e -> {
             for (NaveEnemiga enemigo : enemigos) {
                 dispararEnemigo(enemigo);
             }
@@ -183,7 +200,7 @@ public class JuegoController {
         } else if (rand < 0.9) {
             // 30% Destructor con patrón 1 o 2
             int patron = 1 + (int)(Math.random() * 2);
-           enemigo = new Destructor(x, y, patron);
+            enemigo = new Destructor(x, y, patron);
         } else {
             // 10% Acorazado, solo patrón 1
             enemigo = new Acorazado(x, y);
@@ -345,9 +362,19 @@ public class JuegoController {
                     double x = nave.getLayoutX() + nave.getFitWidth() / 2 - explosionWidth / 2;
                     double y = nave.getLayoutY() + nave.getFitHeight() / 2 - explosionHeight / 2;
 
-                    mostrarExplosion(fondoDelJuego, x, y);
+                    mostrarExplosion(fondoDelJuego, x, y, explosionWidth, explosionHeight);
 
+                    // En vez de eliminar la nave, la ocultamos:
                     nave.setVisible(false);
+
+                    // Detener animaciones del juego
+                    if (animacionPrincipal != null) animacionPrincipal.stop();
+                    if (generarEnemigo != null) generarEnemigo.stop();
+                    if (disparoEnemigos != null) disparoEnemigos.stop();
+
+                    PauseTransition pausa = new PauseTransition(Duration.seconds(1));
+                    pausa.setOnFinished(event -> mostrarDerrotaYVolverAlMenu());
+                    pausa.play();
                 }
             }
         }
@@ -372,5 +399,56 @@ public class JuegoController {
 
     private void mostrarExplosion(Pane fondoDelJuego, double x, double y) {
         mostrarExplosion(fondoDelJuego, x, y, 60, 60);
+    }
+
+    private void mostrarDerrotaYVolverAlMenu() {
+        Platform.runLater(() -> {
+            // Crear un nuevo Stage para el popup
+            Stage popupStage = new Stage();
+            popupStage.initOwner(stage); // dueño es la ventana principal
+            popupStage.setTitle("Derrota");
+
+            // Crear contenido para el popup
+            Label mensaje = new Label("¡Has sido derrotado!");
+            mensaje.setStyle("-fx-font-size: 16px; -fx-padding: 20px;");
+
+            // Botón para cerrar y volver al menú
+            Button botonCerrar = new Button("Aceptar");
+            botonCerrar.setOnAction(e -> {
+                popupStage.close();
+                volverAlMenu();
+            });
+
+            VBox layout = new VBox(10, mensaje, botonCerrar);
+            layout.setAlignment(Pos.CENTER);
+            layout.setPadding(new Insets(10));
+
+            Scene scene = new Scene(layout);
+            popupStage.setScene(scene);
+
+            // Configurar el tamaño y la posición del popup (opcional)
+            popupStage.setWidth(300);
+            popupStage.setHeight(150);
+            popupStage.setResizable(false);
+
+            // Mostrar el popup sin bloquear la ventana principal fullscreen
+            popupStage.show();
+        });
+    }
+
+
+    private void volverAlMenu() {
+        try {
+            FXMLLoader loader = new FXMLLoader(getClass().getResource("/org/example/bullethell/menu-view.fxml"));
+            Parent root = loader.load();
+
+            Scene escenaMenu = new Scene(root);
+            stage.setScene(escenaMenu);
+            stage.centerOnScreen();
+            stage.setFullScreen(false);
+            stage.show();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
     }
 }

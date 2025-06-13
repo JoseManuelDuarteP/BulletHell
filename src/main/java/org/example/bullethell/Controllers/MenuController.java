@@ -19,6 +19,7 @@ public class MenuController {
         Parent root = fxmlLoader.load();
 
         JuegoController juego = fxmlLoader.getController();
+        juego.setStage((Stage) ((Node)event.getSource()).getScene().getWindow());
         juego.iniciarJuego();
 
         cambiarEscena(event,root);
