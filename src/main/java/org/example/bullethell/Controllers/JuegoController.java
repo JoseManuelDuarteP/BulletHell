@@ -288,6 +288,14 @@ public class JuegoController {
                     // Daño
                     enemigo.setHp(enemigo.getHp() - disparo.getDanyo());
 
+                    double impactoWidth = enemigo.getSprite().getFitWidth() * 0.8;
+                    double impactoHeight = enemigo.getSprite().getFitHeight() * 0.8;
+                    double xImpacto = enemigo.getCoordenadaX() + enemigo.getSprite().getFitWidth() / 2 - impactoWidth / 2;
+                    double yImpacto = enemigo.getCoordenadaY() + enemigo.getSprite().getFitHeight() / 2 - impactoHeight / 2;
+
+                    mostrarImpacto(fondoDelJuego, xImpacto, yImpacto, impactoWidth, impactoHeight);
+
+
                     // Eliminar disparo de la pantalla y lista
                     fondoDelJuego.getChildren().remove(disparo.getSprite());
                     iterDisparosJugador.remove();
@@ -347,6 +355,14 @@ public class JuegoController {
                 // Aquí restar vida jugador (debes crear variable hpJugador)
                 hpJugador -= disparo.getDanyo();
 
+                double impactoWidth = 40; // tamaño relativo del impacto en jugador
+                double impactoHeight = 40;
+                double xImpacto = nave.getLayoutX() + nave.getFitWidth() / 2 - impactoWidth / 2;
+                double yImpacto = nave.getLayoutY() + nave.getFitHeight() / 2 - impactoHeight / 2;
+
+                mostrarImpacto(fondoDelJuego, xImpacto, yImpacto, impactoWidth, impactoHeight);
+
+
                 // Eliminar disparo
                 fondoDelJuego.getChildren().remove(disparo.getSprite());
                 iterDisparosEnemigos.remove();
@@ -400,6 +416,24 @@ public class JuegoController {
     private void mostrarExplosion(Pane fondoDelJuego, double x, double y) {
         mostrarExplosion(fondoDelJuego, x, y, 60, 60);
     }
+
+    private void mostrarImpacto(Pane fondo, double x, double y, double ancho, double alto) {
+        Image gifImpacto = new Image(getClass().getResourceAsStream("/sprites/impacto.gif"));
+        ImageView impacto = new ImageView(gifImpacto);
+
+        impacto.setX(x);
+        impacto.setY(y);
+
+        impacto.setFitWidth(ancho);
+        impacto.setFitHeight(alto);
+
+        fondo.getChildren().add(impacto);
+
+        PauseTransition delay = new PauseTransition(Duration.millis(500));
+        delay.setOnFinished(event -> fondo.getChildren().remove(impacto));
+        delay.play();
+    }
+
 
     private void mostrarDerrotaYVolverAlMenu() {
         Platform.runLater(() -> {
