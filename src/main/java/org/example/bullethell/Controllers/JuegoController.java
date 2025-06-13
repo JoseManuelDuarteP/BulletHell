@@ -2,6 +2,7 @@ package org.example.bullethell.Controllers;
 
 import javafx.animation.AnimationTimer;
 import javafx.animation.KeyFrame;
+import javafx.animation.PauseTransition;
 import javafx.animation.Timeline;
 import javafx.application.Platform;
 import javafx.fxml.FXML;
@@ -182,7 +183,7 @@ public class JuegoController {
         } else if (rand < 0.9) {
             // 30% Destructor con patrón 1 o 2
             int patron = 1 + (int)(Math.random() * 2);
-            enemigo = new Destructor(x, y, patron);
+           enemigo = new Destructor(x, y, patron);
         } else {
             // 10% Acorazado, solo patrón 1
             enemigo = new Acorazado(x, y);
@@ -276,6 +277,33 @@ public class JuegoController {
 
                     // Si enemigo muerto, eliminar de pantalla y lista
                     if (enemigo.getHp() <= 0) {
+                        double anchoExplosion;
+                        double altoExplosion;
+
+                        switch (enemigo) {
+                            case Interceptor interceptor -> {
+                                anchoExplosion = 60;
+                                altoExplosion = 60;
+                            }
+                            case Destructor destructor -> {
+                                anchoExplosion = 100;
+                                altoExplosion = 100;
+                            }
+                            case Acorazado acorazado -> {
+                                anchoExplosion = 150;
+                                altoExplosion = 150;
+                            }
+                            default -> {
+                                anchoExplosion = 60;
+                                altoExplosion = 60;
+                            }
+                        }
+
+                        double xExplosion = enemigo.getCoordenadaX() + enemigo.getSprite().getFitWidth() / 2 - anchoExplosion / 2;
+                        double yExplosion = enemigo.getCoordenadaY() + enemigo.getSprite().getFitHeight() / 2 - altoExplosion / 2;
+
+                        mostrarExplosion(fondoDelJuego, enemigo.getCoordenadaX(), enemigo.getCoordenadaY(), anchoExplosion, altoExplosion);
+
                         fondoDelJuego.getChildren().remove(enemigo.getSprite());
                         iterEnemigos.remove();
 
@@ -310,10 +338,39 @@ public class JuegoController {
                 actualizarVida(hpJugador);
                 if (hpJugador <= 0) {
                     System.out.println("Jugador muerto");
-                    // Acción aquí...
+
+                    double explosionWidth = 60;
+                    double explosionHeight = 60;
+
+                    double x = nave.getLayoutX() + nave.getFitWidth() / 2 - explosionWidth / 2;
+                    double y = nave.getLayoutY() + nave.getFitHeight() / 2 - explosionHeight / 2;
+
+                    mostrarExplosion(fondoDelJuego, x, y);
+
+                    nave.setVisible(false);
                 }
             }
         }
     }
 
+    private void mostrarExplosion(Pane fondoDelJuego, double x, double y, double ancho, double alto) {
+        Image gifExplosion = new Image(getClass().getResourceAsStream("/sprites/explosion.gif"));
+        ImageView explosion = new ImageView(gifExplosion);
+
+        explosion.setX(x);
+        explosion.setY(y);
+
+        explosion.setFitWidth(ancho);
+        explosion.setFitHeight(alto);
+
+        fondoDelJuego.getChildren().add(explosion);
+
+        PauseTransition delay = new PauseTransition(Duration.millis(800));
+        delay.setOnFinished(event -> fondoDelJuego.getChildren().remove(explosion));
+        delay.play();
+    }
+
+    private void mostrarExplosion(Pane fondoDelJuego, double x, double y) {
+        mostrarExplosion(fondoDelJuego, x, y, 60, 60);
+    }
 }
