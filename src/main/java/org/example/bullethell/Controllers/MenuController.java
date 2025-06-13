@@ -35,6 +35,8 @@ public class MenuController {
         Stage stage = (Stage) ((Node)event.getSource()).getScene().getWindow();
 
         stage.setScene(escenaJuego);
+        stage.centerOnScreen();
+        stage.setFullScreen(true);
         stage.show();
     }
 }

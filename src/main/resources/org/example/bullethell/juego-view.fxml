@@ -3,7 +3,7 @@
 <?import javafx.scene.image.*?>
 <?import javafx.scene.layout.*?>
 
-<Pane fx:id="fondoDelJuego" prefHeight="471.0" prefWidth="798.0" xmlns="http://javafx.com/javafx/17.0.12" xmlns:fx="http://javafx.com/fxml/1" fx:controller="org.example.bullethell.Controllers.JuegoController">
+<Pane fx:id="fondoDelJuego" prefHeight="693.0" prefWidth="1084.0" xmlns="http://javafx.com/javafx/17.0.12" xmlns:fx="http://javafx.com/fxml/1" fx:controller="org.example.bullethell.Controllers.JuegoController">
    <ImageView fx:id="nave" fitHeight="59.0" fitWidth="107.0" layoutX="14.0" layoutY="206.0" pickOnBounds="true" preserveRatio="true">
       <Image url="@../../../sprites/nave.png" />
    </ImageView>
